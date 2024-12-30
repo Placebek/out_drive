@@ -6,3 +6,7 @@ class UserCreate(BaseModel):
     password: str
     phone_number: str
     city_name: str
+
+class UserBase(BaseModel):
+    phone_number: str
+    password: str
