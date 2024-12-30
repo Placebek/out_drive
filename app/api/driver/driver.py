@@ -39,6 +39,7 @@ async def create_request(request: RequestCreate,access_token: str = Depends(get_
 
     return StatusResponse(status_code=201, status_msg="Request created successfully")
 
+
 @router.get(
     "/request/list",
     summary="",
@@ -50,3 +51,5 @@ async def get_requests(access_token: str = Depends(get_access_token), skip: int 
     if not requests:
         raise HTTPException(status_code=404, detail="No requests found")
     return requests
+
+

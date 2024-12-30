@@ -25,7 +25,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 async def validate_access_token(access_token: str) -> dict:
     try:
         payload = jwt.decode(
-            (access_token),
+            str(access_token),
             settings.TOKEN_SECRET_KEY,
             algorithms=[settings.TOKEN_ALGORITHM]
         )

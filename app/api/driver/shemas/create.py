@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-class PutRequest(BaseModel):
+class RequestBase(BaseModel):
     request_id: int
     
 class RequestCreate(BaseModel):

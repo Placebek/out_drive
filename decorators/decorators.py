@@ -1,9 +1,31 @@
 from fastapi import Request, HTTPException, status
 from functools import wraps
-from context.context import get_access_token, validate_access_token
+from sqlalchemy.ext.asyncio import AsyncSession
+from jose import JWTError
+
+from context.context import validate_access_token
 from model.model import TaxiDriver, User
-from sqlalchemy import insert, select
-from database.db import get_db, async_session_factory
+from sqlalchemy import select
+from database.db import async_session_factory
+
+
+async def validate_user_from_token(access_token: str, db: AsyncSession) -> User:
+    try:
+        user_id = (await validate_access_token(access_token=access_token)).get('user_id')
+
+        stmt = await db.execute(
+            select(User)
+            .filter(User.id == user_id)
+        )
+        user = stmt.scalar_one_or_none()
+        if user is None:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        return user
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
 
 def is_driver(func):
     @wraps(func)

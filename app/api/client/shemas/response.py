@@ -5,8 +5,8 @@ class CityResponse(BaseModel):
     city_name: str
 
     class Config:
-        orm_mode = True
-        from_attributes = True
+        from_orm=True
+        from_attributes=True
 
 class StatusResponse(BaseModel):
     status_code: int
