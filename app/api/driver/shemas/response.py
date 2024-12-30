@@ -9,7 +9,6 @@ class StatusResponse(BaseModel):
 
 
 class RequestBase(BaseModel):
-    id: int
     summ: int
     a_point: float
     b_point: float
@@ -33,3 +32,5 @@ class UserBase(BaseModel):
 
 class RequestWithuser(RequestBase):
     user: Optional[UserBase]
+
+

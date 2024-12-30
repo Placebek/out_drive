@@ -94,4 +94,5 @@ class City(Base):
 
     created_at = Column(DateTime(timezone=True), default=func.now())
 
-    user = relationship('User', back_populates='city')    
+    user = relationship('User', back_populates='city')
+        

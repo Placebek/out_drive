@@ -4,12 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from app.api.driver.commands.driver_crud import update_request
 from app.api.driver.shemas.response import StatusResponse, RequestWithuser
-from database.db import async_session_factory
-from context.context import get_access_token
-from database.db import get_db
-from model.model import *
-from sqlalchemy.future import select
+from app.api.driver.shemas.create import RequestCreate
 from app.api.driver.commands.driver_crud import validate_user_from_token
+from context.context import get_access_token
+from database.db import get_db, async_session_factory
+from model.model import *
+from sqlalchemy import select
 
 
 router = APIRouter()
@@ -22,13 +22,22 @@ def get_db():
         db.close()
 
 @router.post(
-    '/request',
-    summary="",
+    "/request",
+    summary="Create a new request",
     response_model=StatusResponse
 )
-async def request(request_id: int, access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
-    return await update_request(request_id=request_id, access_token=access_token, db=db)
+async def create_request(request: RequestCreate,access_token: str = Depends(get_access_token),db: AsyncSession = Depends(get_db),):
+    user = await validate_user_from_token(access_token=access_token, db=db)
+    new_request = Request(
+        a_point=request.a_point,
+        b_point=request.b_point,
+        summ=request.summ,
+    )
+    db.add(new_request)
+    await db.commit()
+    await db.refresh(new_request)
 
+    return StatusResponse(status_code=201, status_msg="Request created successfully")
 
 @router.get(
     "/request/list",
