@@ -7,7 +7,8 @@ from app.router import route
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",  # Разрешить фронтенд на этом домене
+    # "http://localhost:3000",
+    "http://172.20.10.3:300", 
     # "https://your-production-frontend.com",  # Разрешить продакшен-домен
 ]
 

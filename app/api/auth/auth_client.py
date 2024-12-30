@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.auth.shemas.create import UserBase, UserCreate
 from app.api.auth.shemas.response import StatusResponse, TokenResponse
 
-from app.api.auth.commands.auth_crud import user_register, user_login
+from app.api.auth.commands.auth_client_crud import user_register, user_login
 from database.db import get_db
 
 router = APIRouter()

@@ -12,16 +12,14 @@ async def user_register(user: UserCreate, db: AsyncSession):
     stmt = await db.execute(
         select(User)
         .filter(
-            phone_number==user.phone_number,
+            User.phone_number==user.phone_number,
         )
     )
     existing_user = stmt.scalar_one_or_none()
-
-    if not existing_user:
+    if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
     
     hashed_password = hash_password(user.password)
-
     city = await db.execute(
         select(City.id)
         .filter(
@@ -34,7 +32,7 @@ async def user_register(user: UserCreate, db: AsyncSession):
     new_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
-        hashed_password=user.hashed_password,
+        hashed_password=hashed_password,
         phone_number=user.phone_number,
         city_id=city_id,
     )
@@ -59,7 +57,8 @@ async def user_login(user: UserBase, db: AsyncSession):
                 detail="Invalid username or password"
             )
 
-        access_token, expire_time = create_access_token(data={"sub": db_user.id})
+        access_token, expire_time = create_access_token(data={"sub": str(db_user.id)})
+                                                            #   , "role": "client"})
 
         return TokenResponse(
             access_token=access_token,

@@ -23,7 +23,7 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=func.now())
 
     city = relationship("City", back_populates='user')
-    requests = relationship('Request', back_populates='user')
+    request = relationship('Request', back_populates='user')
     taxi_driver = relationship('TaxiDriver', back_populates='user')
 
 
@@ -94,4 +94,5 @@ class City(Base):
 
     created_at = Column(DateTime(timezone=True), default=func.now())
 
-    user = relationship('User', back_populates='city')    
+    user = relationship('User', back_populates='city')
+        

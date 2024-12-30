@@ -4,9 +4,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.driver.commands.driver_crud import update_request
 from app.api.driver.shemas.response import StatusResponse
+from app.api.driver.shemas.create import PutRequest
+
 
 from context.context import get_access_token
 from database.db import get_db
+from decorators.decorators import is_driver
 
 router = APIRouter()
 
@@ -15,6 +18,6 @@ router = APIRouter()
     summary="",
     response_model=StatusResponse
 )
-async def request(request_id: int, access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
-    return await update_request(request_id=request_id, access_token=access_token, db=db)
-
+@is_driver
+async def request(request: PutRequest, access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
+    return await update_request(request=request, access_token=access_token, db=db)
