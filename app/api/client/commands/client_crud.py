@@ -3,11 +3,11 @@ from jose import JWTError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.client.shemas.response import CityResponse, StatusResponse
+from app.api.client.shemas.response import CityResponse, StatusResponse, OrderResponse
 from app.api.client.shemas.create import RequestCreate
 from context.context import validate_access_token
 from decorators.decorators import validate_user_from_token
-from model.model import User, City, Request
+from model.model import Car, Order, TaxiDriver, User, City, Request
 
 async def all_cities(db: AsyncSession):
     stmt = await db.execute(
@@ -34,3 +34,4 @@ async def request_create(request: RequestCreate, access_token: str, db:AsyncSess
     await db.refresh(db_request)
 
     return StatusResponse(status_code=201, status_msg=f"Reques saved successfully your request")
+

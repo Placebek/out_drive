@@ -2,8 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.client.commands.client_crud import all_cities, request_create
-from app.api.client.shemas.response import CityResponse, StatusResponse
+from app.api.client.commands.client_crud import all_cities, request_create, all_orders
+from app.api.client.shemas.response import CityResponse, StatusResponse, OrderResponse
 from app.api.client.shemas.create import RequestCreate
 from context.context import get_access_token
 from database.db import get_db

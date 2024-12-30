@@ -10,6 +10,7 @@ from context.context import get_access_token
 from database.db import get_db, async_session_factory
 from model.model import *
 from sqlalchemy import select
+from app.api.driver.commands.driver_crud import all_requests, post_request
 
 
 router = APIRouter()
@@ -26,19 +27,9 @@ def get_db():
     summary="Create a new request",
     response_model=StatusResponse
 )
-async def create_request(request: RequestCreate,access_token: str = Depends(get_access_token),db: AsyncSession = Depends(get_db),):
-    user = await validate_user_from_token(access_token=access_token, db=db)
-    new_request = Request(
-        a_point=request.a_point,
-        b_point=request.b_point,
-        summ=request.summ,
-    )
-    db.add(new_request)
-    await db.commit()
-    await db.refresh(new_request)
-
-    return StatusResponse(status_code=201, status_msg="Request created successfully")
-
+@is_driver
+async def request(request: RequestBase, access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
+    return await post_request(request=request, access_token=access_token, db=db)
 
 @router.get(
     "/request/list",
