@@ -18,7 +18,7 @@ class User(Base):
     hashed_password = Column(String(100), nullable=False)
     location = Column(String(150), nullable=True)
 
-    city_id = Column(Integer, ForeignKey('cities', ondelete='CASCADE'), nullable=False)
+    city_id = Column(Integer, ForeignKey('cities.id', ondelete='CASCADE'), nullable=False)
 
     created_at = Column(DateTime(timezone=True), default=func.now())
 
@@ -87,7 +87,7 @@ class Order(Base):
  
 
 class City(Base):
-    __tablename__ = 'cities'
+    __tablename__ = "cities"
 
     id = Column(Integer, primary_key=True, index=True)
     city_name = Column(String(100), nullable=False)
