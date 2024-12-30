@@ -9,9 +9,8 @@ from decorators.decorators import validate_user_from_token
 from model.model import Order, User, Request, TaxiDriver
 
 
-async def update_request(request: RequestBase, access_token: str, db:AsyncSession):
+async def post_request(request: RequestBase, access_token: str, db:AsyncSession):
     taxi_driver = await validate_user_from_token(access_token=access_token, db=db)
-
     stmt = await db.execute(
         select(Request)
         .filter(
@@ -25,7 +24,7 @@ async def update_request(request: RequestBase, access_token: str, db:AsyncSessio
         raise HTTPException(status_code=404, detail="Request not found")
     
     new_order = Order(
-        request_id=request.request_id,
+        request_id=request.id,
         taxi_id=taxi_driver.id,
     )
 

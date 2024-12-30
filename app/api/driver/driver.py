@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.driver.commands.driver_crud import all_requests, update_request
+from app.api.driver.commands.driver_crud import all_requests, post_request
 from app.api.driver.shemas.response import StatusResponse
 from app.api.driver.shemas.create import RequestBase
 
@@ -20,7 +20,7 @@ router = APIRouter()
 )
 @is_driver
 async def request(request: RequestBase, access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
-    return await update_request(request=request, access_token=access_token, db=db)
+    return await post_request(request=request, access_token=access_token, db=db)
 
 @router.get(
     '/request',

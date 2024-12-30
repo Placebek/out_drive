@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from jose import JWTError
-from sqlalchemy import select
+from sqlalchemy import insert, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from context.context import create_access_token, hash_password, verify_password
 from app.api.auth.shemas.create import UserBase, UserCreate
@@ -29,18 +29,26 @@ async def user_register(user: UserCreate, db: AsyncSession):
 
     city_id = city.scalar_one_or_none()
 
-    new_user = User(
-        first_name=user.first_name,
-        last_name=user.last_name,
-        hashed_password=hashed_password,
-        phone_number=user.phone_number,
-        city_id=city_id,
+    new_user = await db.execute(
+        insert(User)
+        .values(
+            first_name=user.first_name,
+            last_name=user.last_name,
+            hashed_password=hashed_password,
+            phone_number=user.phone_number,
+            city_id=city_id,
+        )
+        .returning(User.id)
     )
-    db.add(new_user)
     await db.commit()
-    await db.refresh(new_user)
+    user_id = new_user.fetchone()[0]
 
-    return StatusResponse(status_code=201, status_msg="Great")
+    access_token, expire_time = create_access_token(data={"sub": str(user_id)})
+
+    return TokenResponse(
+        access_token=access_token,
+        access_token_expire_time=expire_time
+    )
     
 
 async def user_login(user: UserBase, db: AsyncSession):
