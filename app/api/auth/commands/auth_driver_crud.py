@@ -10,7 +10,7 @@ from model.model import User, TaxiDriver, Car
 
 async def validate_user_from_token(access_token: str, db: AsyncSession) -> User:
     try:
-        user_id = await validate_access_token(access_token=access_token)
+        user_id = (await validate_access_token(access_token=access_token)).get('user_id')
 
         stmt = await db.execute(
             select(User)
@@ -37,7 +37,7 @@ async def driver_register(driver_data: DriverCreate, access_token: str, db: Asyn
     )
     existing_user = stmt.scalar_one_or_none()
 
-    if not existing_user:
+    if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
 
     db_car = await db.execute(

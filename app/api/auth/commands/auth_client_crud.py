@@ -58,7 +58,6 @@ async def user_login(user: UserBase, db: AsyncSession):
             )
 
         access_token, expire_time = create_access_token(data={"sub": str(db_user.id)})
-                                                            #   , "role": "client"})
 
         return TokenResponse(
             access_token=access_token,

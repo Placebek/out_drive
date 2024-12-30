@@ -23,7 +23,6 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -
 
 
 async def validate_access_token(access_token: str) -> dict:
-    print("dfdfdfsdfsdfsdfsdfsdfsdf", access_token)
     try:
         payload = jwt.decode(
             str(access_token),
@@ -35,7 +34,6 @@ async def validate_access_token(access_token: str) -> dict:
     
     user_id = payload.get("sub")
     exp = payload.get("exp")
-
 
     if user_id is None:
         raise HTTPException(status_code=401, detail="Invalid token structure")
