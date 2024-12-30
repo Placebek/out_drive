@@ -22,7 +22,6 @@ async def all_cities(db: AsyncSession):
 
 async def request_create(request: RequestCreate, access_token: str, db:AsyncSession):
     user = await validate_user_from_token(access_token=access_token, db=db)
-
     db_request = Request(
         user_id=user.id,
         a_point=request.a_point,
