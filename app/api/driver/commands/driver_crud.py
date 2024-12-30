@@ -52,25 +52,3 @@ async def get_all_requests(access_token: str, skip: int, limit: int, db: AsyncSe
         req.user = user_data.scalar_one_or_none()
 
     return requests
-
-
-async def get_all_orders(access_token: str, db: AsyncSession):
-    await validate_user_from_token(access_token=access_token, db=db)
-
-    try:
-        result = await db.execute(
-            select(Order)
-            .options(
-                select(Order.request), 
-                select(Order.taxi_driver)
-            )
-        )
-        orders = result.scalars().all()
-
-        if not orders:
-            raise HTTPException(status_code=404, detail="No orders found")
-
-        return orders
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")

@@ -9,4 +9,4 @@ class RequestCreate(BaseModel):
     b_point: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

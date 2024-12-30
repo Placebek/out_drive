@@ -18,9 +18,8 @@ class RequestResponse(BaseModel):
     phone_number: str
 
     class Config:
-        from_orm=True
         from_attributes=True
-        
+
 class UserInfo(BaseModel):
     id: int
     first_name: str
@@ -28,7 +27,7 @@ class UserInfo(BaseModel):
     phone_number: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class RequestWithUser(BaseModel):
     id: int
@@ -40,33 +39,4 @@ class RequestWithUser(BaseModel):
     user: Optional[UserInfo]  
     
     class Config:
-        orm_mode = True
-
-
-class CarInfo(BaseModel):
-    id: int
-    mark_name: str
-    color: str
-    number_car: str
-
-    class Config:
-        orm_mode = True
-
-
-class TaxiDriverRespone(BaseModel):
-    id: int
-    photo: str
-    user: Optional[UserInfo] 
-    car: Optional[CarInfo]
-
-    class Config:
-        orm_mode = True
-    
-
-class OrderResponse(BaseModel):
-    id: int
-    request: Optional[RequestWithUser]
-    taxi_driver: Optional[TaxiDriverRespone]
-
-    class Config:
-        orm_mode = True
+        from_attributes = True

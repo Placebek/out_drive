@@ -2,8 +2,8 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.driver.commands.driver_crud import get_all_requests, post_request, get_all_orders
-from app.api.driver.shemas.response import StatusResponse, RequestWithUser, OrderResponse
+from app.api.driver.commands.driver_crud import get_all_requests, post_request
+from app.api.driver.shemas.response import StatusResponse, RequestWithUser
 from app.api.driver.shemas.create import RequestBase
 from context.context import get_access_token
 from database.db import get_db
@@ -35,12 +35,3 @@ async def get_requests(
     db: AsyncSession = Depends(get_db)
 ):
     return await get_all_requests(access_token=access_token, skip=skip, limit=limit, db=db)
-
-
-@router.get(
-    "/orders/list", 
-    response_model=List[OrderResponse]
-)
-@is_driver
-async def get_orders(access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
-    return await get_all_orders(access_token=access_token, db=db)

@@ -35,3 +35,24 @@ async def request_create(request: RequestCreate, access_token: str, db:AsyncSess
 
     return StatusResponse(status_code=201, status_msg=f"Reques saved successfully your request")
 
+async def get_all_orders(access_token: str, db: AsyncSession):
+    await validate_user_from_token(access_token=access_token, db=db)
+
+    try:
+        result = await db.execute(
+            select(Order)
+            .options(
+                select(Order.request), 
+                select(Order.taxi_driver)
+            )
+        )
+        orders = result.scalars().all()
+
+        if not orders:
+            raise HTTPException(status_code=404, detail="No orders found")
+
+        return orders
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    
