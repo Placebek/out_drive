@@ -35,22 +35,42 @@ async def post_request(request: RequestBase, access_token: str, db:AsyncSession)
     return StatusResponse(status_code=201, status_msg="Upgrade order")
 
 
-async def all_requests(access_token: str, db:AsyncSession):
-    stmt = await db.execute(
-        select(
-            Request.id,
-            Request.summ,
-            Request.a_point,
-            Request.b_point,
-            User.id,
-            User.first_name,
-            User.last_name,
-            User.phone_number,
-        )
-        .join(User, User.id==Request.user_id)
+async def get_all_requests(access_token: str, skip: int, limit: int, db: AsyncSession):
+    await validate_user_from_token(access_token=access_token, db=db)
+    
+    result = await db.execute(
+        select(Request)
+        .offset(skip)
+        .limit(limit)
     )
-    requests = stmt.all()
+    requests = result.scalars().all()
+    
+    if not requests:
+        raise HTTPException(status_code=404, detail="No requests found")
+    for req in requests:
+        user_data = await db.execute(select(User).filter(User.id == req.user_id))
+        req.user = user_data.scalar_one_or_none()
 
-    return [RequestResponse.from_orm(request) for request in requests]
+    return requests
 
 
+async def get_all_orders(access_token: str, db: AsyncSession):
+    await validate_user_from_token(access_token=access_token, db=db)
+
+    try:
+        result = await db.execute(
+            select(Order)
+            .options(
+                select(Order.request), 
+                select(Order.taxi_driver)
+            )
+        )
+        orders = result.scalars().all()
+
+        if not orders:
+            raise HTTPException(status_code=404, detail="No orders found")
+
+        return orders
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
