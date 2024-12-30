@@ -2,9 +2,9 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.drive.commands.drive_crud import all_cities, request_create
-from app.api.drive.shemas.response import CityResponse, StatusResponse
-from app.api.drive.shemas.create import RequestCreate
+from app.api.client.commands.client_crud import all_cities, request_create
+from app.api.client.shemas.response import CityResponse, StatusResponse
+from app.api.client.shemas.create import RequestCreate
 
 from context.context import get_access_token
 from database.db import get_db
@@ -18,7 +18,6 @@ router = APIRouter()
 )
 async def request(request: RequestCreate, access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
     return await request_create(request=request, access_token=access_token, db=db)
-
 
 @router.get(
     '/cities',

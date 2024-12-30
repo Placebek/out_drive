@@ -1,10 +1,10 @@
 from fastapi import HTTPException
 from jose import JWTError
-from sqlalchemy import insert, select
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.drive.shemas.response import CityResponse, StatusResponse
-from app.api.drive.shemas.create import RequestCreate
+from app.api.client.shemas.response import CityResponse, StatusResponse
+from app.api.client.shemas.create import RequestCreate
 from context.context import validate_access_token
 from model.model import User, City, Request
 
@@ -28,7 +28,7 @@ async def validate_user_from_token(access_token: str, db: AsyncSession) -> User:
     
 
 async def all_cities(access_token: str, db:AsyncSession):
-    user = await validate_user_from_token(access_token=access_token, db=db)
+    await validate_user_from_token(access_token=access_token, db=db)
 
     stmt = await db.execute(
         select(City.city_name)
@@ -41,18 +41,10 @@ async def all_cities(access_token: str, db:AsyncSession):
 async def request_create(request: RequestCreate, access_token: str, db:AsyncSession):
     user = await validate_user_from_token(access_token=access_token, db=db)
 
-    db_city = await db.execute(
-        select(City.id)
-        .filter(
-            City.city_name==request.city_name
-        )
-    )
-    city_id = db_city.scalars().first()
-
     db_request = Request(
         user_id=user.id,
-        A_point=request.A_point,
-        B_point=request.B_point,
+        a_point=request.a_point,
+        b_point=request.b_point,
         summ=request.summ,
     )
 
@@ -60,5 +52,4 @@ async def request_create(request: RequestCreate, access_token: str, db:AsyncSess
     await db.commit()
     await db.refresh(db_request)
 
-    return StatusResponse(status_code=201, status_msg=f"Reques saved successfully your request id = {request_id}")
-
+    return StatusResponse(status_code=201, status_msg=f"Reques saved successfully your request")
