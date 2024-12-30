@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from app.api.driver.commands.driver_crud import update_request
-from app.api.driver.shemas.response import StatusResponse, RequestWithuser
+from app.api.driver.shemas.response import StatusResponse, RequestWithUser
 from app.api.driver.shemas.create import RequestCreate
 from app.api.driver.commands.driver_crud import validate_user_from_token
 from context.context import get_access_token
@@ -42,14 +42,24 @@ async def create_request(request: RequestCreate,access_token: str = Depends(get_
 
 @router.get(
     "/request/list",
-    summary="",
-    response_model=List[RequestWithuser])
-async def get_requests(access_token: str = Depends(get_access_token), skip: int = 0,limit: int = 10,db: AsyncSession = Depends(get_db)):
+    summary="Get a list of requests",
+    response_model=List[RequestWithUser]
+)
+async def get_requests(
+    access_token: str = Depends(get_access_token), 
+    skip: int = 0, 
+    limit: int = 10, 
+    db: AsyncSession = Depends(get_db)
+):
     user = await validate_user_from_token(access_token=access_token, db=db)
     result = await db.execute(select(Request).offset(skip).limit(limit))
     requests = result.scalars().all()
     if not requests:
         raise HTTPException(status_code=404, detail="No requests found")
+    for req in requests:
+        user_data = await db.execute(select(User).filter(User.id == req.user_id))
+        req.user = user_data.scalar_one_or_none()
+
     return requests
 
 

@@ -7,33 +7,6 @@ class StatusResponse(BaseModel):
     status_code: int
     status_msg: str
 
-
-class RequestBase(BaseModel):
-    summ: int
-    a_point: float
-    b_point: float
-    user_id: int
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
-
-
-class UserBase(BaseModel):
-    id: int
-    first_name: str
-    last_name: str
-    phone_number: str
-    location: str
-
-    class Config:
-        orm_mode = True
-
-
-class RequestWithuser(RequestBase):
-    user: Optional[UserBase]
-
-
 class RequestResponse(BaseModel):
     id: int
     summ: float
@@ -48,3 +21,22 @@ class RequestResponse(BaseModel):
         from_orm=True
         from_attributes=True
         
+class UserInfo(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+
+    class Config:
+        orm_mode = True
+
+class RequestWithUser(BaseModel):
+    id: int
+    summ: int
+    a_point: float
+    b_point: float
+    user_id: int
+    created_at: datetime
+    user: Optional[UserInfo]  
+    
+    class Config:
+        orm_mode = True
