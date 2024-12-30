@@ -5,8 +5,8 @@ class RequestBase(BaseModel):
     
 class RequestCreate(BaseModel):
     summ: int
-    a_point: float
-    b_point: float
+    a_point: str
+    b_point: str
 
     class Config:
         orm_mode = True

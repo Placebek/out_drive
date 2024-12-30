@@ -61,8 +61,8 @@ class Request(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     summ = Column(Integer, nullable=False)
-    a_point = Column(Float, nullable=False)
-    b_point = Column(Float, nullable=False)
+    a_point = Column(String(100), nullable=False)
+    b_point = Column(String(100), nullable=False)
 
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 

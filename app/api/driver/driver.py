@@ -3,7 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Session
 from app.api.driver.commands.driver_crud import update_request
-from app.api.driver.shemas.response import StatusResponse, RequestWithUser
+from app.api.driver.shemas.response import StatusResponse, RequestWithUser, OrderResponse
 from app.api.driver.shemas.create import RequestCreate
 from app.api.driver.commands.driver_crud import validate_user_from_token
 from context.context import get_access_token
@@ -63,3 +63,19 @@ async def get_requests(
     return requests
 
 
+@router.get("/orders/list", response_model=List[OrderResponse])
+async def get_orders(db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(
+            select(Order)
+            .options(select(Order.request), select(Order.taxi_driver))
+        )
+        orders = result.scalars().all()
+
+        if not orders:
+            raise HTTPException(status_code=404, detail="No orders found")
+
+        return orders
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
