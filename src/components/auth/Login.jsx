@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { loginUsers } from '../../store/actions/authActions'; 
+import { loginUsers } from '../../store/actions/authActions';
 import { Link } from 'react-router-dom';
 
 function Login() {
@@ -9,13 +9,13 @@ function Login() {
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
-  const { loading, error } = useSelector(state => state.auth); 
+  const { loading, error } = useSelector(state => state.auth);
 
   const validate = () => {
     const newErrors = {};
     if (!phoneNumber) {
       newErrors.phoneNumber = 'Phone number is required.';
-    } else if (!/^\d{10,12}$/.test(phoneNumber)) {
+    } else if (!/^\d{8,12}$/.test(phoneNumber)) {
       newErrors.phoneNumber = 'Phone number must contain 10-12 digits.';
     }
 

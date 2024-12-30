@@ -7,9 +7,10 @@ import {
 
 export const registerUsers = createAsyncThunk(
 	'auth/register',
-	async (_, { rejectWithValue }) => {
+	async (userData, { rejectWithValue }) => {
 		try {
-			const data = await registerUser()
+			const data = await registerUser(userData)
+            
 			console.log(data)
 			return data
 		} catch (error) {

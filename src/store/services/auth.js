@@ -1,7 +1,12 @@
 import API from './api'
 
-export const registerUser = async () => {
-	const response = await API.post('//')
+export const registerUser = async (userData) => {
+	const response = await API.post('auth/client/register', userData, {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+    console.log(response)
 	return response.data
 }
 
