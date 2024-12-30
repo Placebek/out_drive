@@ -24,5 +24,5 @@ async def request(request: RequestCreate, access_token: str = Depends(get_access
     summary="",
     response_model=List[CityResponse]
 )
-async def cities(access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
-    return await all_cities(access_token=access_token, db=db)
+async def cities(db: AsyncSession = Depends(get_db)):
+    return await all_cities(db=db)

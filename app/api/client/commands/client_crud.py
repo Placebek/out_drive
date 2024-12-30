@@ -27,11 +27,10 @@ async def validate_user_from_token(access_token: str, db: AsyncSession) -> User:
         raise HTTPException(status_code=401, detail="Invalid token")
     
 
-async def all_cities(access_token: str, db:AsyncSession):
-    await validate_user_from_token(access_token=access_token, db=db)
+async def all_cities(db:AsyncSession):
 
     stmt = await db.execute(
-        select(City.city_name)
+        select(City.id, City.city_name)
     )
     cities = stmt.all()
 

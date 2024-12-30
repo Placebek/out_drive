@@ -7,13 +7,14 @@ from app.router import route
 app = FastAPI()
 
 origins = [
-    "http://localhost:3000",  # Разрешить фронтенд на этом домене
+    "http://localhost:3000", 
+    "http://172.20.10.3:3000"  # Разрешить фронтенд на этом домене
     # "https://your-production-frontend.com",  # Разрешить продакшен-домен
 ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],  # Разрешить все методы (GET, POST, и т.д.)
     allow_headers=["*"],  # Разрешить все заголовки

@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 class RequestCreate(BaseModel):
-    a_point: str
-    b_point: str
+    a_point: float
+    b_point: float
     summ: int
     
