@@ -6,32 +6,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.api.client.shemas.response import CityResponse, StatusResponse
 from app.api.client.shemas.create import RequestCreate
 from context.context import validate_access_token
+from decorators.decorators import validate_user_from_token
 from model.model import User, City, Request
 
-
-async def validate_user_from_token(access_token: str, db: AsyncSession) -> User:
-    try:
-        user_id = await validate_access_token(access_token=access_token)
-
-        stmt = await db.execute(
-            select(User)
-            .filter(User.id == user_id)
-        )
-        user = stmt.scalar_one_or_none()
-        if user is None:
-            raise HTTPException(status_code=404, detail="User not found")
-        
-        return user
-
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
-
-async def all_cities(access_token: str, db:AsyncSession):
-    await validate_user_from_token(access_token=access_token, db=db)
-
+async def all_cities(db: AsyncSession):
     stmt = await db.execute(
-        select(City.city_name)
+        select(
+            City.id, City.city_name
+        )
     )
     cities = stmt.all()
 
