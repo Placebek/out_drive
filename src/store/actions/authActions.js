@@ -24,9 +24,9 @@ export const registerUsers = createAsyncThunk(
 
 export const loginUsers = createAsyncThunk(
 	'auth/login',
-	async (_, { rejectWithValue }) => {
+	async (loginData, { rejectWithValue }) => {
 		try {
-			const data = await loginUser()
+			const data = await loginUser(loginData)
 			console.log(data)
 			return data
 		} catch (error) {
@@ -39,9 +39,9 @@ export const loginUsers = createAsyncThunk(
 
 export const registerTaxies = createAsyncThunk(
 	'auth/register/taxi',
-	async (_, { rejectWithValue }) => {
+	async (formData, { rejectWithValue }) => {
 		try {
-			const data = await registerTaxi()
+			const data = await registerTaxi(formData)
 			console.log(data)
 			return data
 		} catch (error) {

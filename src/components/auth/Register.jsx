@@ -21,7 +21,7 @@ function Register() {
     const [phone_number, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [load, setLoading] = useState(false);
-
+ 
     useEffect(() => {
         if (cities.length === 0) {
             dispatch(citiesList());
@@ -46,7 +46,7 @@ function Register() {
             const response = await dispatch(registerUsers(userData));
 
             console.log('Registration successful:', response);
-            localStorage.setItem('accessToken', response.access_token);
+            localStorage.setItem('access_token', response.payload.access_token);
             navigate('/');
 
         } catch (error) {

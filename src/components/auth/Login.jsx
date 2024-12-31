@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginUsers } from '../../store/actions/authActions';
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
+
 
 function Login() {
+  const navigate = useNavigate()
+
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
@@ -29,17 +33,32 @@ function Login() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const loginData = {
+      phone_number: phoneNumber,
+      password: password,
+    };
+
     if (validate()) {
-      dispatch(loginUsers({ phoneNumber, password }));
+      try {
+        const response = await dispatch(loginUsers(loginData));
+        localStorage.setItem('access_token', response.payload.access_token);
+        localStorage.setItem('roles', response.payload.roles);
+        localStorage.setItem('original_roles', response.payload.roles);
+
+        navigate('/');
+      } catch (error) {
+        console.error('Registration failed:', error.response?.data || error.message);
+      }
     }
   };
+
 
   return (
     <div className="w-screen h-screen bg-custom-gradient">
       <form
-        onSubmit={handleSubmit}
         className="flex -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2 absolute"
       >
         <div className="border-[1px] border-white bg-white/85 h-[45vh] w-[85vw] rounded-[25px] shadow-2xl flex-col py-[2vh] px-[5vw]">
@@ -73,7 +92,7 @@ function Login() {
           </div>
           <div className="flex justify-center">
             <button
-              type="submit"
+              onClick={handleSubmit}
               className="mt-[2vh] py-[0.5vh] px-[1vw] bg-gradient-to-t from-lime-500 to-lime-300 shadow-xl text-[2.5vh] rounded-lg w-[30vw] font-medium"
             >
               {loading ? 'Loading...' : 'Login'}

@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { YMaps, Placemark, Map } from '@pbe/react-yandex-maps';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { userRequest } from '../../store/actions/requestsAction';
+
 
 const Maps = () => {
+    const dispatch = useDispatch();
+    // const { loading } = useSelector(state => state.request); 
     const [userLocation, setUserLocation] = useState(null); // Текущее местоположение
     const [destination, setDestination] = useState(null); // Точка Б
     const [mapInstance, setMapInstance] = useState(null); // Карта
     const [ymapsInstance, setYmapsInstance] = useState(null); // ymaps API
     const [price, setPrice] = useState(''); // Цена поездки
     const [error, setError] = useState('');
+    const [status, setStatus] = useState('chooseDestination'); // Статус (выбор точки, ввод цены, ожидание)
 
     // Получение геолокации пользователя
     useEffect(() => {
@@ -89,34 +94,61 @@ const Maps = () => {
         }
 
         const requestData = {
-            start: userLocation,
-            destination,
-            price,
+            a_point_lat: userLocation.lat.toString(), // Конвертация широты точки A в строку
+            a_point_lon: userLocation.lon.toString(), // Конвертация долготы точки A в строку
+            b_point_lat: destination.lat.toString(),  // Конвертация широты точки B в строку
+            b_point_lon: destination.lon.toString(),  // Конвертация долготы точки B в строку
+            summ: price,                  
         };
 
+
         try {
-            const response = await axios.post('http://localhost:8000/api/orders', requestData);
+            setStatus('waiting');
+            const response = await dispatch(userRequest(requestData))
+            
             alert('Заказ успешно отправлен!');
-            console.log(response.data);
-            // Очистка полей после успешной отправки
+            console.log(response);
             setDestination(null);
             setPrice('');
+            // setStatus('chooseDestination'); 
         } catch (error) {
             console.error('Ошибка при отправке заказа:', error);
             alert('Не удалось отправить заказ. Попробуйте снова.');
+            setStatus('chooseDestination'); 
         }
     };
 
     if (error) {
         return <div>{error}</div>;
     }
-
     if (!userLocation) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex justify-center items-center h-screen w-screen bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid" width="200" height="200">
+                    <path
+                        style={{ transform: 'scale(0.8)', transformOrigin: '50px 50px' }}
+                        strokeLinecap="round"
+                        d="M24.3 30C11.4 30 5 43.3 5 50s6.4 20 19.3 20c19.3 0 32.1-40 51.4-40 C88.6 30 95 43.3 95 50s-6.4 20-19.3 20C56.4 70 43.6 30 24.3 30z"
+                        strokeDasharray="42.76482137044271 42.76482137044271"
+                        strokeWidth="8"
+                        stroke="#64ff3f"
+                        fill="none"
+                    >
+                        <animate
+                            values="0;256.58892822265625"
+                            keyTimes="0;1"
+                            dur="1s"
+                            repeatCount="indefinite"
+                            attributeName="stroke-dashoffset"
+                        />
+                    </path>
+                </svg>
+            </div>
+        );
     }
 
     return (
-        <div style={{ height: '100vh', position: 'relative' }}>
+        <div className="relative h-screen">
             <YMaps
                 query={{
                     apikey: "6c6dd435-4d3f-4042-b687-df5e1b6d5cd6",
@@ -155,41 +187,39 @@ const Maps = () => {
                 </Map>
             </YMaps>
 
+            {/* Элемент для выбора точки Б */}
+            {status === 'chooseDestination' && (
+                <div className="absolute top-5 left-1/2 transform -translate-x-1/2 bg-white p-[2vh] text-[1.8vh] font-medium rounded-lg shadow-lg z-10">
+                    <p>Please choose a point B </p>
+                </div>
+            )}
+
             {/* Форма подтверждения заказа */}
-            {destination && (
-                <div style={{
-                    position: 'absolute',
-                    bottom: '20px',
-                    left: '50%',
-                    transform: 'translateX(-50%)',
-                    backgroundColor: 'white',
-                    padding: '20px',
-                    borderRadius: '10px',
-                    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                }}>
-                    <div style={{ marginBottom: '10px' }}>
-                        <label>Цена поездки:</label>
+            {destination && status === 'chooseDestination' && (
+                <div className="absolute bottom-[5vh] left-1/2 transform -translate-x-1/2 bg-white p-[5vw] rounded-lg shadow-lg z-10">
+                    <div className="mb-[1vh]">
+                        <label className="block mb-[0.5vh] text-[1.4vh]">Cost of the trip</label>
                         <input
                             type="number"
                             value={price}
                             onChange={(e) => setPrice(e.target.value)}
                             placeholder="Введите цену"
-                            style={{ marginLeft: '10px', padding: '5px', width: '100px' }}
+                            className="px-[1.5vw] py-[1vh] border rounded-md focus:outline-lime-500 "
                         />
                     </div>
                     <button
                         onClick={handleSubmit}
-                        style={{
-                            backgroundColor: '#4CAF50',
-                            color: 'white',
-                            border: 'none',
-                            padding: '10px 20px',
-                            cursor: 'pointer',
-                            borderRadius: '5px',
-                        }}
+                        className="bg-green-500 text-white py-[1.5vh] font-semibold text-[1.6vh] px-[3vw] translate-x-1/2 rounded-xl"
                     >
-                        Подтвердить заказ
+                        Send
                     </button>
+                </div>
+            )}
+
+            {/* Ожидание после подтверждения */}
+            {status === 'waiting' && (
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded-lg shadow-lg z-10">
+                    <p>Ожидайте...</p>
                 </div>
             )}
         </div>

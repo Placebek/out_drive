@@ -6,6 +6,8 @@ module.exports = {
 			backgroundImage: {
 				'custom-gradient':
 					'linear-gradient(0deg, rgba(255,248,0,1) 21%, rgba(191,255,8,1) 43%)',
+				'test':
+				"url('https://i.sstatic.net/kx8MT.gif')"
 			},
 			fontFamily: {
 				playfair: ['"Playfair Display"', 'serif'],

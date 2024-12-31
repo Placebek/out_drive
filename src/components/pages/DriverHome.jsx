@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import Sidebar from '../modals/Sidebar';
-import { Link } from 'react-router-dom';
 
-function Home() {
+import { Link } from 'react-router-dom';
+import DriverSidebar from '../modals/DriverSidebar';
+
+function DriverHome() {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     const toggleSidebar = () => {
@@ -36,19 +37,18 @@ function Home() {
             </div>
 
             {/* Sidebar */}
-            <Sidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
+            <DriverSidebar isOpen={isSidebarOpen} onClose={toggleSidebar} />
 
             {/* Заголовок */}
             <div className="text-[4vh] font-semibold font-montserrat text-center pt-[10vh]">
                 Gooo???
-                
             </div>
-            <Link to={'/travel'} className='flex justify-center mt-[5vh]'>
-            <button className='hover:opacity-85 border-[1px] py-[2vh] px-[4vw] bg-gradient-to-t from-lime-600 to-lime-400 text-[4vh] rounded-2xl font-ptsans font-[520]' >Start to travel</button>
+            <Link to={'/travel/driver'} className='flex justify-center mt-[5vh]'>
+                <button className='hover:opacity-85 border-[1px] py-[2vh] px-[4vw] bg-gradient-to-t from-lime-600 to-lime-400 text-[4vh] rounded-2xl font-ptsans font-[520]' >Start to taxi</button>
             </Link>
-            
+
         </div>
     );
 }
 
-export default Home;
+export default DriverHome;
