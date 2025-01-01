@@ -28,6 +28,11 @@ const Maps = () => {
                 (error) => {
                     console.error("Error getting user location", error);
                     setError("Не удалось получить ваше местоположение.");
+                },
+                {
+                    enableHighAccuracy: true,
+                    maximumAge: 0,            
+                    timeout: 10000,          
                 }
             );
         } else {
@@ -105,7 +110,7 @@ const Maps = () => {
         try {
             setStatus('waiting');
             const response = await dispatch(userRequest(requestData))
-            
+
             alert('Заказ успешно отправлен!');
             console.log(response);
             setDestination(null);

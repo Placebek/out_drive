@@ -5,9 +5,9 @@ function ProtectedRoute({ children }) {
     const navigate = useNavigate();
 
     useEffect(() => {
-        const accessToken = localStorage.getItem('access_token'); 
+        const access_token = localStorage.getItem('access_token'); 
 
-        if (!accessToken) {
+        if (!access_token) {
             navigate('/login');
         }
     }, [navigate]);

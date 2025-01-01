@@ -41,12 +41,16 @@ function Register() {
             phone_number: phone_number,
             password: password,
             city_name: selectedCity,
+            roles: 'passenger',
+
         };
         try {
             const response = await dispatch(registerUsers(userData));
 
             console.log('Registration successful:', response);
             localStorage.setItem('access_token', response.payload.access_token);
+            localStorage.setItem('original_roles', response.payload.roles);
+            
             navigate('/');
 
         } catch (error) {

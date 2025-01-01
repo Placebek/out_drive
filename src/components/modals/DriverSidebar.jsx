@@ -7,27 +7,6 @@ const DriverSidebar = ({ isOpen, onClose }) => {
     const [originalRole, setOriginalRole] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const handleRoleChange = () => {
-        if (originalRole === 'driver') {
-            const newRole = role === 'driver' ? 'passenger' : 'driver';
-            setRole(newRole);
-            localStorage.setItem('roles', newRole);
-            navigate('/');
-
-            setTimeout(() => {
-                setLoading(false);  // Убрать лоадер после "загрузки"
-            }, 500);  // Имитация времени для обновления
-        }
-    };
-
-    useEffect(() => {
-        const originalRoleFromStorage = localStorage.getItem('original_roles');
-        const storedRole = localStorage.getItem('roles') || 'passenger';
-
-        setOriginalRole(originalRoleFromStorage);
-        setRole(storedRole);
-    }, []);
-
     if (loading) {
         return (
             <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-30 z-50">
@@ -51,24 +30,6 @@ const DriverSidebar = ({ isOpen, onClose }) => {
                     >
                         &times;
                     </button>
-                </div>
-
-                <div className="flex justify-between items-center p-4">
-                    <span className="text-lg font-semibold text-white">
-                        Switch to {role === 'driver' ? 'Passenger' : 'Driver'}
-                    </span>
-                    <div
-                        className="relative inline-block w-12 mr-2 align-middle select-none transition duration-200 ease-in"
-                    >
-                        <span
-                            onClick={handleRoleChange}
-                            className={`block w-14 h-8 rounded-full cursor-pointer ${role === 'driver' ? 'bg-green-500' : 'bg-gray-400'}`}
-                        >
-                            <span
-                                className={`absolute top-0.5 left-0.5 block w-7 h-7 bg-white rounded-full shadow-md transform transition-transform duration-300 ${role === 'driver' ? 'translate-x-6' : 'translate-x-0'}`}
-                            ></span>
-                        </span>
-                    </div>
                 </div>
             </div>
 

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { calculateDistance } from '../../utils/distance';
 import { formatDistanceToNow } from 'date-fns';
-
+import { Link } from 'react-router-dom';
+import { setSelectedRequest } from '../../store/reducers/requestReducer';
+import { useDispatch } from 'react-redux';
 
 function WidgetsRequest({ props }) {
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState('');
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -51,20 +54,25 @@ function WidgetsRequest({ props }) {
     parseFloat(props.a_point_lon)
   );
 
+  const handleSelect = () => {
+    dispatch(setSelectedRequest(props)); 
+  };
 
   return (
-    <div className='border-[0.5px] border-lime-100 relative rounded-2xl p-3 bg-white/25 mb-[1vh]'>
-      <div className='flex flex-col font-notosans'>
-        <div className=' '>Approximate distance:  <span className='font-semibold'>{distance.toFixed(2)} km</span> </div>
-        <div className=' '>Distance to passenger: <span className='font-semibold'> {distanceToPassenger.toFixed(2)} km</span> </div>
-        <div className='font-semibold text-[2vh]'>{props.summ} Тг</div>
-        <div className='absolute right-[2vw] '>{getTimeAgo(props.created_at)}</div>
-        <div className='flex flex-row gap-x-[1vw]'>
-          <div className=' '>{props.user.first_name}</div>
-          <div className=' '>{props.user.last_name}</div>
+    <Link to={`/travel/driver/${props.id}`} onClick={handleSelect}>
+      <div className='border-[0.5px] border-lime-100 relative rounded-2xl p-3 bg-white/25 mb-[1vh]'>
+        <div className='flex flex-col font-notosans'>
+          <div className=' '>Approximate distance:  <span className='font-semibold'>{distance.toFixed(2)} km</span> </div>
+          <div className=' '>Distance to passenger: <span className='font-semibold'> {distanceToPassenger.toFixed(2)} km</span> </div>
+          <div className='font-semibold text-[2vh]'>{props.summ} Тг</div>
+          <div className='absolute right-[2vw] '>{getTimeAgo(props.created_at)}</div>
+          <div className='flex flex-row gap-x-[1vw]'>
+            <div className=' '>{props.user.first_name}</div>
+            <div className=' '>{props.user.last_name}</div>
+          </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 

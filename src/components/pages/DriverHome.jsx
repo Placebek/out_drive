@@ -47,6 +47,10 @@ function DriverHome() {
                 <button className='hover:opacity-85 border-[1px] py-[2vh] px-[4vw] bg-gradient-to-t from-lime-600 to-lime-400 text-[4vh] rounded-2xl font-ptsans font-[520]' >Start to taxi</button>
             </Link>
 
+            <Link to={'/travel'} className='flex justify-center mt-[5vh]'>
+                <button className='hover:opacity-85 border-[1px] py-[2vh] px-[4vw] bg-gradient-to-t from-lime-600 to-lime-400 text-[4vh] rounded-2xl font-ptsans font-[520]' >Start to travel</button>
+            </Link>
+
         </div>
     );
 }

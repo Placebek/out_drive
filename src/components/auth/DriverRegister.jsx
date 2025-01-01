@@ -1,65 +1,65 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { registerTaxies } from '../../store/actions/authActions'; // Path to your actions
+import { useNavigate } from 'react-router-dom';
 
-function DriverRegister() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { loading, error } = useSelector((state) => state.auth);
-
+function DriverRegister({role, setRole}) {
+    const navigate = useNavigate() 
     const [formData, setFormData] = useState({
         mark_name: "",
         color: "",
         number_car: "",
-        photo: "https://cdn-icons-png.flaticon.com/512/1535/1535791.png",  // Default URL
+        photo: "https://cdn-icons-png.flaticon.com/512/1535/1535791.png",
     });
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-
-        // Create the object with data to be sent to the server
-        const dataToSend = {
-            mark_name: formData.mark_name,
-            color: formData.color,
-            number_car: formData.number_car,
-            photo: formData.photo,  // Sending the photo URL
-        };
-
-        try {
-            // Send data to the server via dispatch
-            const response = await dispatch(registerTaxies(dataToSend));
-
-            // Ensure that registration was successful
-            if (response?.payload) {
-                // Successful registration, navigate to the main page
-                navigate('/');
-                alert("Driver successfully registered!");
-            }
-        } catch (error) {
-            alert("Error during driver registration: " + error.message);
-        }
-    };
 
     const handleInputChange = (e) => {
         const { name, value, files } = e.target;
 
-        if (name === "photo") {
-            // If uploading a photo, send the URL of the photo to the server
-            setFormData((prev) => ({ ...prev, photo: URL.createObjectURL(files[0]) }));
+        if (name === "photo" && files && files.length > 0) {
+            const file = files[0];
+            const fileURL = URL.createObjectURL(file);
+            setFormData((prev) => ({ ...prev, photo: fileURL })); 
         } else {
-            setFormData((prev) => ({ ...prev, [name]: value }));
+            setFormData((prev) => ({ ...prev, [name]: value })); 
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        const dataToSend = {
+            mark_name: formData.mark_name,
+            color: formData.color,
+            number_car: formData.number_car,
+            photo: formData.photo, 
+        };
+
+        console.log("Отправляемые данные:", dataToSend);
+
+        try {
+            const response = await fetch('https://192.168.193.31:8000/auth/driver/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`, 
+                },
+                body: JSON.stringify(dataToSend),
+            });
+            if (response.ok) {
+                localStorage.setItem('original_roles', 'driver');
+                setRole('driver')
+                alert('Driver successfully registered!');
+                navigate('/');
+            } else {
+                alert('You already have driver account');
+                navigate('/')
+            }
+        } catch (error) {
+            console.error("Ошибка регистрации:", error);
+            alert('Error during registration!');
         }
     };
 
     return (
         <div className="w-screen h-screen bg-gradient-to-r from-blue-500 to-indigo-600 flex flex-col justify-center items-center">
-            <Link to="/" className="absolute left-6 top-6 text-white text-xl">
-                <svg xmlns="http://www.w3.org/2000/svg" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd" viewBox="0 0 512 404.43">
-                    <path fill-rule="nonzero" d="m68.69 184.48 443.31.55v34.98l-438.96-.54 173.67 159.15-23.6 25.79L0 199.94 218.6.02l23.6 25.79z" />
-                </svg>
-            </Link>
-
             <div className="bg-white/80 border border-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
                 <div className="text-center text-3xl font-bold text-blue-700 mb-4">Driver Registration</div>
                 <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,7 +69,7 @@ function DriverRegister() {
                         </div>
                     )}
                     <div>
-                        <label htmlFor="photo" className="block text-sm font-semibold text-gray-700">Photo:</label>
+                        <label htmlFor="photo" className="block text-sm font-semibold text-gray-700">Upload Photo:</label>
                         <input
                             type="file"
                             id="photo"
@@ -77,6 +77,7 @@ function DriverRegister() {
                             accept="image/*"
                             onChange={handleInputChange}
                             className="mt-1 block w-full text-sm text-gray-700 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            required
                         />
                     </div>
                     <div>
@@ -118,14 +119,11 @@ function DriverRegister() {
                     <div className="flex justify-center mt-6">
                         <button
                             type="submit"
-                            disabled={loading}
-                            className={`w-full py-2 px-4 text-white font-semibold rounded-md ${loading ? 'bg-gray-400' : 'bg-blue-500 hover:bg-blue-600'}`}
+                            className="w-full py-2 px-4 text-white font-semibold bg-blue-500 hover:bg-blue-600 rounded-md"
                         >
-                            {loading ? 'Registering...' : 'Register'}
+                            Register
                         </button>
                     </div>
-
-                    {error && <div className="text-red-500 text-center mt-2">{error}</div>}
                 </form>
             </div>
         </div>

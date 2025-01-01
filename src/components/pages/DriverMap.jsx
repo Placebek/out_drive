@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRequestsAll } from '../../store/actions/requestsAction';
 import WidgetsRequest from '../modals/WidgetsRequest';
 import { Link } from 'react-router-dom';
 import { setRequest } from '../../store/reducers/requestReducer';
+import { de } from 'date-fns/locale';
 
 function DriverMap() {
     const dispatch = useDispatch();
-    const request = useSelector(state=>state.request.requests)
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-
+    const request = useSelector(state=>state.request.requests)
+    
     useEffect(() => {
-        const socket = new WebSocket('wss://192.168.193.31:8000/client/ws');
+        const socket = new WebSocket('wss://192.168.193.31:8000/client/ws/requests');
         setLoading(true);
 
         socket.onopen = () => {
@@ -30,21 +31,19 @@ function DriverMap() {
         socket.onmessage = (event) => {
             console.log("WebSocket message received:", event.data);
             const data = JSON.parse(event.data);
-            if (Array.isArray(data.result)) {
-                debugger
-                setRequest(data.result); 
+            if (data) {
+                dispatch(setRequest(data)); 
             } else {
                 console.error("Expected an array, but received:", data.result);
             }
-
             setLoading(false);
-        };
 
-        // Очистка при закрытии соединения WebSocket
+
+        };
         return () => {
             socket.close();
         };
-    }, []);
+    }, [dispatch]);
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -58,11 +57,11 @@ function DriverMap() {
         }
     };
 
-    const reversedRequests = [...request].reverse(); // Инвертируем список заявок
+    const reversedRequests = [...request].reverse(); 
 
     useEffect(() => {
-        fetchRequests(); // Загружаем заявки при монтировании компонента
-    }, [dispatch]);
+        fetchRequests(); 
+    }, []);
 
     if (loading) {
         return <div>Загрузка заявок...</div>;
@@ -84,8 +83,8 @@ function DriverMap() {
                 </div>
                 <div className='text-[3vh] font-montserrat font-semibold mb-[2vh]'>List Requests</div>
             </div>
-            {reversedRequests && reversedRequests.length > 0 ? (
-                reversedRequests.map((request) => (
+            {request && request.length > 0 ? (
+                request.map((request) => (
                     <WidgetsRequest key={request.id} props={request} />
                 ))
             ) : (

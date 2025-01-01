@@ -9,6 +9,7 @@ const initialState = {
 	loading: false,
 	error: null,
 	requests: [],
+	selectedRequest: []
 }
 
 const requestSlice = createSlice({
@@ -17,6 +18,9 @@ const requestSlice = createSlice({
 	reducers: {
 		setRequest(state, action) {
 			state.requests = action.payload
+		},
+		setSelectedRequest(state, action) {
+			state.selectedRequest = action.payload
 		},
 	},
 	extraReducers: builder => {
@@ -63,5 +67,5 @@ const requestSlice = createSlice({
 			})
 	},
 })
-export const { setRequest } = requestSlice.actions
+export const { setRequest, setSelectedRequest } = requestSlice.actions
 export default requestSlice.reducer

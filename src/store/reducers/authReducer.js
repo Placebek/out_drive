@@ -9,7 +9,6 @@ const initialState = {
 	loading: false,
 	error: null,
 	user: null,
-	taxi: null,
 	role: 'passenger',
 }
 
@@ -57,7 +56,6 @@ const authSlice = createSlice({
 			})
 			.addCase(registerTaxies.fulfilled, (state, action) => {
 				state.loading = false
-				state.taxi = action.payload
 				state.role = 'driver'
 			})
 			.addCase(registerTaxies.rejected, (state, action) => {

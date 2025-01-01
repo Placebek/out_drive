@@ -15,17 +15,16 @@ export const loginUser = async (loginData) => {
         headers: {
             'Content-Type': 'application/json',
 		}, 
-        
     })
 	return response.data
 }
 
 export const registerTaxi = async (formData) => {
-	const response = await API.post('auth/driver/register/', formData)
-	return response.data
-}
-
-export const loginTaxi = async () => {
-	const response = await API.post('//')
+	const response = await API.post('auth/driver/register', formData, {
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	})
+	debugger
 	return response.data
 }
