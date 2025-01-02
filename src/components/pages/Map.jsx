@@ -15,6 +15,32 @@ const Maps = () => {
     const [error, setError] = useState('');
     const [status, setStatus] = useState('chooseDestination'); // Статус (выбор точки, ввод цены, ожидание)
 
+
+
+    const connectWebsocket = () => {
+        const token = localStorage.getItem('access_token'); 
+        const socket = new WebSocket('wss://192.168.193.31:8000/driver/ws/client/');
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+            socket.send(JSON.stringify({ type: "auth", token: token }));
+        };
+
+        socket.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        return () => socket.close(); 
+    }
+
     // Получение геолокации пользователя
     useEffect(() => {
         if (navigator.geolocation) {
@@ -31,8 +57,8 @@ const Maps = () => {
                 },
                 {
                     enableHighAccuracy: true,
-                    maximumAge: 0,            
-                    timeout: 10000,          
+                    maximumAge: 0,
+                    timeout: 10000,
                 }
             );
         } else {
@@ -103,7 +129,7 @@ const Maps = () => {
             a_point_lon: userLocation.lon.toString(), // Конвертация долготы точки A в строку
             b_point_lat: destination.lat.toString(),  // Конвертация широты точки B в строку
             b_point_lon: destination.lon.toString(),  // Конвертация долготы точки B в строку
-            summ: price,                  
+            summ: price,
         };
 
 
@@ -119,7 +145,7 @@ const Maps = () => {
         } catch (error) {
             console.error('Ошибка при отправке заказа:', error);
             alert('Не удалось отправить заказ. Попробуйте снова.');
-            setStatus('chooseDestination'); 
+            setStatus('chooseDestination');
         }
     };
 
@@ -150,6 +176,11 @@ const Maps = () => {
                 </svg>
             </div>
         );
+    }
+
+    const connectWebsocketAndHandleSubmit = () =>{
+        handleSubmit();
+        connectWebsocket();
     }
 
     return (
@@ -213,7 +244,7 @@ const Maps = () => {
                         />
                     </div>
                     <button
-                        onClick={handleSubmit}
+                        onClick={connectWebsocketAndHandleSubmit}
                         className="bg-green-500 text-white py-[1.5vh] font-semibold text-[1.6vh] px-[3vw] translate-x-1/2 rounded-xl"
                     >
                         Send
@@ -224,7 +255,7 @@ const Maps = () => {
             {/* Ожидание после подтверждения */}
             {status === 'waiting' && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded-lg shadow-lg z-10">
-                    <p>Ожидайте...</p>
+                    <p>Wait until a driver is found for you...</p>
                 </div>
             )}
         </div>
