@@ -35,7 +35,7 @@ function DriverRegister({role, setRole}) {
         console.log("Отправляемые данные:", dataToSend);
 
         try {
-            const response = await fetch('https://192.168.0.12:8000/auth/driver/register', {
+            const response = await fetch('http://193.108.115.124/auth/driver/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -12,7 +12,7 @@ function DriverMap() {
     const request = useSelector(state=>state.request.requests)
     
     useEffect(() => {
-        const socket = new WebSocket('wss://192.168.0.12:8000/driver/ws/requests');
+        const socket = new WebSocket('ws://193.108.115.124/driver/ws/requests');
         setLoading(true);
  
         socket.onopen = () => {

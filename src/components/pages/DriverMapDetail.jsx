@@ -142,7 +142,7 @@ function DriverMapDetail() {
 
     const connectWebsocket = () => {
         const token = localStorage.getItem('access_token');
-        const socket = new WebSocket('wss://192.168.0.12:8000/driver/ws/location');
+        const socket = new WebSocket('ws://193.108.115.124/driver/ws/location');
 
         socket.onopen = () => {
             console.log('WebSocket connection established');
