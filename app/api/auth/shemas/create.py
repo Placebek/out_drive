@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     password: str
     phone_number: str
     city_name: str
+    roles: str
 
 class UserBase(BaseModel):
     phone_number: str
@@ -13,7 +14,7 @@ class UserBase(BaseModel):
 
 
 class DriverCreate(BaseModel):
-    photo: str
+    photo: str 
     mark_name: str
     color: str
     number_car: str

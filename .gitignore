@@ -6,9 +6,13 @@ env/
 __pycache__/
 *.pyc
 *.pyo
+alembic/versions/
 
 .idea/
 .vscode/
 
 ex.py
 .env
+
+cert.pem
+key.pem

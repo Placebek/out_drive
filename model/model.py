@@ -17,6 +17,7 @@ class User(Base):
     phone_number = Column(String(50), nullable=False)
     hashed_password = Column(String(100), nullable=False)
     location = Column(String(150), nullable=True)
+    roles = Column(String(100), default='passenger')
 
     city_id = Column(Integer, ForeignKey('cities.id', ondelete='CASCADE'), nullable=False)
 
@@ -40,7 +41,25 @@ class TaxiDriver(Base):
 
     user = relationship('User', back_populates='taxi_driver')
     car = relationship('Car', back_populates='taxi_driver')
+    taxi_driver_location = relationship('TaxiDriverLocation', back_populates='taxi_driver', uselist=False, cascade="all, delete-orphan"
+    )
     order = relationship('Order', back_populates='taxi_driver')
+
+
+
+
+class TaxiDriverLocation(Base):
+    __tablename__ = "taxi_drivers_location"
+    id = Column(Integer, primary_key=True, index=True)
+
+    driver_id = Column(Integer, ForeignKey('taxi_drivers.id', ondelete='CASCADE'), nullable=False)
+    latitude = Column(String, nullable=True)  
+    longitude = Column(String, nullable=True)
+
+    created_at = Column(DateTime(timezone=True), default=func.now())
+
+    taxi_driver = relationship('TaxiDriver', back_populates='taxi_driver_location')
+    order = relationship('Order', back_populates='taxi_driver_location')
 
 
 class Car(Base):
@@ -61,8 +80,11 @@ class Request(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     summ = Column(Integer, nullable=False)
-    a_point = Column(String(100), nullable=False)
-    b_point = Column(String(100), nullable=False)
+    a_point_lat = Column(String(100), nullable=False)
+    a_point_lon = Column(String(100), nullable=False)
+    b_point_lat = Column(String(100), nullable=False)
+    b_point_lon = Column(String(100), nullable=False)
+
 
     user_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
@@ -76,15 +98,16 @@ class Order(Base):
     __tablename__ = "orders"
 
     id = Column(Integer, primary_key=True, index=True)
-
-    request_id = Column(Integer, ForeignKey('requests.id', ondelete='CASCADE'), nullable=False)
     taxi_id = Column(Integer, ForeignKey('taxi_drivers.id', ondelete='CASCADE'), nullable=False)
+    request_id = Column(Integer, ForeignKey('requests.id', ondelete='CASCADE'), nullable=False)
+    taxi_drivers_location_id = Column(Integer, ForeignKey('taxi_drivers_location.id', ondelete='CASCADE'), nullable=True)
 
     created_at = Column(DateTime(timezone=True), default=func.now())
 
     request = relationship('Request', back_populates='order')
+    taxi_driver_location = relationship('TaxiDriverLocation', back_populates='order')
     taxi_driver = relationship('TaxiDriver', back_populates='order')
- 
+    
 
 class City(Base):
     __tablename__ = "cities"

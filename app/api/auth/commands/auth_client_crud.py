@@ -37,6 +37,8 @@ async def user_register(user: UserCreate, db: AsyncSession):
             hashed_password=hashed_password,
             phone_number=user.phone_number,
             city_id=city_id,
+            roles='passenger'
+
         )
         .returning(User.id)
     )
@@ -67,10 +69,11 @@ async def user_login(user: UserBase, db: AsyncSession):
 
         access_token, expire_time = create_access_token(data={"sub": str(db_user.id)})
 
-        return TokenResponse(
-            access_token=access_token,
-            access_token_expire_time=expire_time
-        )
+        return {
+            "roles": db_user.roles,
+            "access_token":access_token,
+            "access_token_expire_time":expire_time
+        }
 
     except Exception as e:
         raise HTTPException(

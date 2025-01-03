@@ -25,7 +25,28 @@ async def validate_user_from_token(access_token: str, db: AsyncSession) -> User:
 
     except JWTError:
         raise HTTPException(status_code=401, detail="Invalid token")
-    
+
+
+
+async def validate_driver_from_token(access_token: str, db: AsyncSession) -> TaxiDriver:
+    try:
+        user_id = (await validate_access_token(access_token=access_token)).get('user_id')
+
+        stmt = await db.execute(
+            select(TaxiDriver).filter(TaxiDriver.user_id == user_id)
+        )
+        taxi_driver = stmt.scalar_one()
+
+        if not taxi_driver:
+            raise HTTPException(status_code=404, detail="Taxi driver not found")
+
+        return taxi_driver
+
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+
+
 
 def is_driver(func):
     @wraps(func)

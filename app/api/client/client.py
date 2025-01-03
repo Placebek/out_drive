@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, WebSocket, WebSocketDisconnect
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.client.commands.client_crud import all_cities, request_create, get_all_orders
@@ -7,8 +7,23 @@ from app.api.client.shemas.response import CityResponse, StatusResponse, OrderRe
 from app.api.client.shemas.create import RequestCreate
 from context.context import get_access_token
 from database.db import get_db
+from websocket import manager
+
 
 router = APIRouter()
+
+@router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_text()
+            print(f"Received data: {data}")
+    except WebSocketDisconnect:
+        print(f"Disconnecting: {websocket}")
+        manager.disconnect(websocket)
+    except Exception as e:
+        print(f"Error: {e}")
 
 @router.post(
     '/request',
@@ -34,3 +49,4 @@ async def cities(db: AsyncSession = Depends(get_db)):
 )
 async def get_orders(access_token: str = Depends(get_access_token), db: AsyncSession = Depends(get_db)):
     return await get_all_orders(access_token=access_token, db=db)
+

@@ -1,10 +1,7 @@
 from fastapi import HTTPException
-from jose import JWTError
-from sqlalchemy import insert, select
+from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from context.context import create_access_token, validate_access_token, verify_password
-from app.api.auth.shemas.create import UserBase, DriverCreate
-from app.api.auth.shemas.response import StatusResponse, TokenResponse
+from app.api.auth.shemas.create import DriverCreate
 from decorators.decorators import validate_user_from_token
 from model.model import User, TaxiDriver, Car
 
@@ -14,9 +11,9 @@ async def driver_register(driver_data: DriverCreate, access_token: str, db: Asyn
 
     stmt = await db.execute(
         select(TaxiDriver)
-        .join(User, TaxiDriver.id == user.id)
+        .join(User, TaxiDriver.user_id == user.id)
     )
-    existing_user = stmt.scalar_one_or_none()
+    existing_user = stmt.first()
 
     if existing_user:
         raise HTTPException(status_code=400, detail="User already exists")
@@ -45,6 +42,12 @@ async def driver_register(driver_data: DriverCreate, access_token: str, db: Asyn
         car_id = db_car.fetchone()[0]
     else:
         car_id = car.id
+    
+    await db.execute(
+        update(User)
+        .where(User.id == user.id)
+        .values(roles="driver")
+)
 
     new_texi_driver = TaxiDriver(
         photo=driver_data.photo,
@@ -55,4 +58,9 @@ async def driver_register(driver_data: DriverCreate, access_token: str, db: Asyn
     await db.commit()
     await db.refresh(new_texi_driver)
 
-    return StatusResponse(status_code=201, status_msg="Great")
+    updated_user_stmt = await db.execute(
+        select(User.roles).where(User.id == user.id)
+    )
+    updated_user = updated_user_stmt.scalar_one()
+
+    return {"status_code":201, "status_msg":"Great", "roles": updated_user}
