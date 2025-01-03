@@ -13,9 +13,9 @@ function DriverMap() {
     const request = useSelector(state=>state.request.requests)
     
     useEffect(() => {
-        const socket = new WebSocket('wss://192.168.193.31:8000/client/ws/requests');
+        const socket = new WebSocket('wss://192.168.193.31:8000/driver/ws/requests');
         setLoading(true);
-
+ 
         socket.onopen = () => {
             console.log("WebSocket connection established.");
         };

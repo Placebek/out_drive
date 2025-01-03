@@ -42,7 +42,6 @@ export const registerTaxies = createAsyncThunk(
 	async (formData, { rejectWithValue }) => {
 		try {
 			const data = await registerTaxi(formData)
-			debugger
 			return data
 		} catch (error) {
 			return rejectWithValue(

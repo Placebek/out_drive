@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { updateDriverLocation, driverLocation } from '../actions/locationAction'
+import { updateDriverLocation, driverLocation, createDriverLocation } from '../actions/locationAction'
 
 const initialState = {
 	cities: [],
@@ -35,6 +35,19 @@ const locationSlice = createSlice({
 				state.cities = action.payload
 			})
 			.addCase(driverLocation.rejected, (state, action) => {
+				state.loading = false
+				state.error = action.payload
+			})
+		builder
+			.addCase(createDriverLocation.pending, state => {
+				state.loading = true
+				state.error = null
+			})
+			.addCase(createDriverLocation.fulfilled, (state, action) => {
+				state.loading = false
+				state.cities = action.payload
+			})
+			.addCase(createDriverLocation.rejected, (state, action) => {
 				state.loading = false
 				state.error = action.payload
 			})

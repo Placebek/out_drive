@@ -28,6 +28,14 @@ const Maps = () => {
 
         socket.onmessage = (event) => {
             console.log('Message from server:', event.data);
+            const data = JSON.parse(event.data);
+            setStatus('connect');
+            if (mapInstance && ymapsInstance && userLocation) {
+                createRoute(mapInstance, ymapsInstance, userLocation , {
+                    lat: parseFloat(data['latitude']),
+                    lon: parseFloat(data['longitude']),
+                });
+            }
         };
 
         socket.onclose = () => {
@@ -256,6 +264,11 @@ const Maps = () => {
             {status === 'waiting' && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-5 rounded-lg shadow-lg z-10">
                     <p>Wait until a driver is found for you...</p>
+                </div>
+            )}
+            {status === 'connect' && (
+                <div className="absolute top-5 bg-white p-5 rounded-lg shadow-lg z-10">
+                    <p>Your request was accept. B point is driver</p>
                 </div>
             )}
         </div>

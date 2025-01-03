@@ -25,6 +25,5 @@ export const registerTaxi = async (formData) => {
 			'Content-Type': 'application/json',
 		},
 	})
-	debugger
 	return response.data
 }

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
 import { YMaps, Map, Placemark } from '@pbe/react-yandex-maps';
-import { createOrder, delOrder } from '../../store/actions/ordersAction';
+import { createOrder } from '../../store/actions/ordersAction';
+import { updateDriverLocation, createDriverLocation } from '../../store/actions/locationAction';
 import { calculateDistance } from '../../utils/distance';
 
 function DriverMapDetail() {
@@ -33,7 +34,10 @@ function DriverMapDetail() {
 
     const orderData = {
         request_id: selectedRequest.id,
-    };
+        latitude: driverLocation[0].toString(),
+        longitude: driverLocation[1].toString(),
+    }
+
     const distance = calculateDistance(
         parseFloat(selectedRequest.a_point_lat),
         parseFloat(selectedRequest.a_point_lon),
@@ -62,7 +66,7 @@ function DriverMapDetail() {
             alert('Геолокация не поддерживается вашим устройством.');
         }
     }, []);
-
+ 
     const handleConfirm = async () => {
         try {
             await dispatch(createOrder(orderData));
@@ -77,12 +81,20 @@ function DriverMapDetail() {
     useEffect(() => {
         if (mapInstance && ymapsInstance && driverLocation[0]) {
             createRoute(mapInstance, ymapsInstance, driverLocation, step === 'driverToClient' ? aPoint : bPoint);
+       
+            if (step === 'clientToDestination') {
+                const locationData = {
+                    latitude: driverLocation[0].toString(),
+                    longitude: driverLocation[1].toString(),
+                };
+                dispatch(updateDriverLocation(locationData));
+            }
         }
     }, [driverLocation, mapInstance, ymapsInstance, step, aPoint, bPoint]);
 
+   
 
     const createRoute = (map, ymaps, start, end) => {
-        debugger
         if (!ymaps.multiRouter) {
             console.error("Yandex multiRouter is not loaded.");
             return;
@@ -124,6 +136,37 @@ function DriverMapDetail() {
                 Заявка не выбрана. Вернитесь к списку заявок.
             </div>
         );
+    }
+
+
+
+    const connectWebsocket = () => {
+        const token = localStorage.getItem('access_token');
+        const socket = new WebSocket('wss://192.168.193.31:8000/driver/ws/location');
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+            socket.send(JSON.stringify({ type: "auth", token: token, client_id: selectedRequest.user_id}));
+        };
+
+        socket.onmessage = (event) => {
+            console.log('Message from server:', event.data);
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        return () => socket.close();
+    }
+
+    const connectWebsocketAndHandleSubmit = () => {
+        handleConfirm();
+        connectWebsocket();
     }
 
     return (
@@ -187,7 +230,7 @@ function DriverMapDetail() {
                 {step === 'driverToClient' && (
                     <button
                         className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold text-xl hover:bg-blue-700 transition duration-300 shadow-md"
-                        onClick={handleConfirm}>
+                        onClick={connectWebsocketAndHandleSubmit}>
                         Confirm the order
                     </button>
                 )}

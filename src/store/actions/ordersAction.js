@@ -6,7 +6,6 @@ export const createOrder = createAsyncThunk(
 	async (orderData, { rejectWithValue }) => {
 		try {
 			const data = await postOrders(orderData)
-            debugger
 			return data
 		} catch (error) {
 			return rejectWithValue(
@@ -22,7 +21,6 @@ export const delOrder = createAsyncThunk(
 	async (id, { rejectWithValue }) => {
 		try {
 			const data = await deleteOrders(id)
-			debugger
 			return data
 		} catch (error) {
 			return rejectWithValue(
