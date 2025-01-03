@@ -50,8 +50,9 @@ function Register() {
             console.log('Registration successful:', response);
             localStorage.setItem('access_token', response.payload.access_token);
             localStorage.setItem('original_roles', response.payload.roles);
-            
-            navigate('/');
+            if (response.access_token) {
+                navigate('/');
+            }
 
         } catch (error) {
             console.error('Registration failed:', error.response?.data || error.message);

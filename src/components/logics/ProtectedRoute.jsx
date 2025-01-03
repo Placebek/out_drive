@@ -7,7 +7,7 @@ function ProtectedRoute({ children }) {
     useEffect(() => {
         const access_token = localStorage.getItem('access_token'); 
 
-        if (!access_token) {
+        if (!access_token || access_token === null || access_token === undefined ) {
             navigate('/login');
         }
     }, [navigate]);
