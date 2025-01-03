@@ -4,7 +4,6 @@ import { getRequestsAll } from '../../store/actions/requestsAction';
 import WidgetsRequest from '../modals/WidgetsRequest';
 import { Link } from 'react-router-dom';
 import { setRequest } from '../../store/reducers/requestReducer';
-import { de } from 'date-fns/locale';
 
 function DriverMap() {
     const dispatch = useDispatch();
@@ -13,11 +12,11 @@ function DriverMap() {
     const request = useSelector(state=>state.request.requests)
     
     useEffect(() => {
-        const socket = new WebSocket('wss://192.168.193.31:8000/driver/ws/requests');
+        const socket = new WebSocket('wss://192.168.0.12:8000/driver/ws/requests');
         setLoading(true);
  
         socket.onopen = () => {
-            console.log("WebSocket connection established.");
+            console.log("WebSocket connection established.");   
         };
 
         socket.onerror = (error) => {
